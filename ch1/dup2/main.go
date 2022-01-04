@@ -15,7 +15,8 @@ import (
 )
 
 func main() {
-	counts := make(map[string]int)
+	// Ex 1.4 Modify to print the names of all files on which each duplicate line occurs.
+	counts := make(map[string][]string)
 	files := os.Args[1:]
 	if len(files) == 0 {
 		countLines(os.Stdin, counts)
@@ -30,17 +31,17 @@ func main() {
 			f.Close()
 		}
 	}
-	for line, n := range counts {
-		if n > 1 {
-			fmt.Printf("%d\t%s\n", n, line)
+	for line, f := range counts {
+		if len(f) > 1 {
+			fmt.Printf("%v\t%s\n", f, line)
 		}
 	}
 }
 
-func countLines(f *os.File, counts map[string]int) {
+func countLines(f *os.File, counts map[string][]string) {
 	input := bufio.NewScanner(f)
 	for input.Scan() {
-		counts[input.Text()]++
+		counts[input.Text()] = append(counts[input.Text()], f.Name())
 	}
 	// NOTE: ignoring potential errors from input.Err()
 }
