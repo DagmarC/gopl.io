@@ -9,6 +9,7 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"image/gif"
@@ -18,6 +19,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -40,25 +42,34 @@ func main() {
 	// The sequence of images is deterministic unless we seed
 	// the pseudo-random number generator using the current time.
 	// Thanks to Randall McPherson for pointing out the omission.
+
+	cycles := 5
 	rand.Seed(time.Now().UTC().UnixNano())
 
 	if len(os.Args) > 1 && os.Args[1] == "web" {
 		//!+http
 		handler := func(w http.ResponseWriter, r *http.Request) {
-			lissajous(w)
+			query := r.URL.Query()
+
+			fmt.Printf("LOG: for all queries=%v and query[cycle][0]=%v", query, query["cycles"][0])
+			cycles, err := strconv.Atoi(query["cycles"][0])
+			if err != nil {
+				log.Fatal("Cycles conversion error.")
+			}
+			lissajous(w, float64(cycles))
 		}
+
 		http.HandleFunc("/", handler)
 		//!-http
 		log.Fatal(http.ListenAndServe("localhost:8000", nil))
 		return
 	}
 	//!+main
-	lissajous(os.Stdout)
+	lissajous(os.Stdout, float64(cycles))
 }
 
-func lissajous(out io.Writer) {
+func lissajous(out io.Writer, cycles float64) {
 	const (
-		cycles  = 5     // number of complete x oscillator revolutions
 		res     = 0.001 // angular resolution
 		size    = 100   // image canvas covers [-size..+size]
 		nframes = 64    // number of animation frames

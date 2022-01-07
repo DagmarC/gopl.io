@@ -17,13 +17,20 @@ import (
 )
 
 func main() {
+
 	start := time.Now()
 	ch := make(chan string)
 	for _, url := range os.Args[1:] {
 		go fetch(url, ch) // start a goroutine
 	}
 	for range os.Args[1:] {
-		fmt.Println(<-ch) // receive from channel ch
+		// fmt.Println(<-ch) // receive from channel ch
+		// Ex 1.10
+		f := "fetchAllRes.txt"
+		err := writeFile(f, <-ch)
+		if err != nil {
+			fmt.Fprint(os.Stderr, err)
+		}
 	}
 	fmt.Printf("%.2fs elapsed\n", time.Since(start).Seconds())
 }
@@ -44,6 +51,20 @@ func fetch(url string, ch chan<- string) {
 	}
 	secs := time.Since(start).Seconds()
 	ch <- fmt.Sprintf("%.2fs  %7d  %s", secs, nbytes, url)
+}
+
+func writeFile(filename, text string) error {
+	f, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		return fmt.Errorf("opening file %v", err)
+	}
+
+	defer f.Close()
+
+	if _, err = f.WriteString(text + "\n"); err != nil {
+		return fmt.Errorf("writing file %v", err)
+	}
+	return nil
 }
 
 //!-

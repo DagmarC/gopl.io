@@ -9,25 +9,39 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
+	"strings"
 )
 
 func main() {
 	for _, url := range os.Args[1:] {
+		// Ex 1.8
+		const httpP = "http://"
+		const httpsP = "https://"
+		if !strings.HasPrefix(url, httpP) && !strings.HasPrefix(url, httpsP) {
+			url = httpP + url
+		}
+
 		resp, err := http.Get(url)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "fetch: %v\n", err)
 			os.Exit(1)
 		}
-		b, err := ioutil.ReadAll(resp.Body)
-		resp.Body.Close()
+		// b, err := ioutil.ReadAll(resp.Body)
+		// if err != nil {
+		// 	fmt.Fprintf(os.Stderr, "fetch: reading %s: %v\n", url, err)
+		// 	os.Exit(1)
+		// }
+
+		fmt.Println("Status code:", resp.StatusCode) // Ex 1.9
+		// Ex 1.8
+		_, err = io.Copy(os.Stdout, resp.Body)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "fetch: reading %s: %v\n", url, err)
-			os.Exit(1)
+			fmt.Fprintf(os.Stderr, "ïo.copy: %v\n", err)
 		}
-		fmt.Printf("%s", b)
+		resp.Body.Close()
 	}
 }
 

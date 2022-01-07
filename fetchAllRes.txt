@@ -1,0 +1,12 @@
+1.90s   175346  https://www.stopka.cz
+1.69s   175346  https://www.stopka.cz
+1.74s   175346  https://www.stopka.cz
+0.44s    14662  https://google.com
+1.56s    69860  https://instagram.com
+1.63s   175346  https://www.stopka.cz
+0.34s    14715  https://google.com
+1.06s    69783  https://instagram.com
+1.58s   175346  https://www.stopka.cz
+0.34s    14683  https://google.com
+0.96s    69781  https://instagram.com
+1.58s   175346  https://www.stopka.cz
